@@ -5,8 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.awt.print.Pageable;
 import java.io.ObjectInputFilter;
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -24,6 +26,11 @@ public class CashCardController {
 
         Optional<CashCard> cashCardOptional = cashCardRepository.findById(id);
         return cashCardOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<CashCard>> findAll(Pageable pageable) {
+        return null; //ResponseEntity.ok(cashCardRepository.findAll());
     }
 
     @PostMapping("")
