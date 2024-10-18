@@ -29,4 +29,19 @@ class CashcardApplicationTests {
 		assertThat(id).isNotNull();
 	}
 
+	@Test
+	void shouldCreateANewCashCard() {
+		CashCard newCashCard = new CashCard(null, 250.00);
+		ResponseEntity<String> response = restTemplate.postForEntity("/cashcards", newCashCard, String																																									.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+		// Add assertions such as these
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		Number id = documentContext.read("$.id");
+		Double amount = documentContext.read("$.amount");
+
+		assertThat(id).isNotNull();
+		assertThat(amount).isEqualTo(250.00);
+	}
+
 }
