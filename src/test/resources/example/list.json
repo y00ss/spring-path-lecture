@@ -1,5 +1,5 @@
 [
-  {"id": 99, "amount": 123.45, "owner": "T1" },
-  {"id": 100, "amount": 100.00, "owner": "T2" },
-  {"id": 101, "amount": 150.00 ,  "owner": "T3" }
+  {"id": 99, "amount": 123.45, "owner": "system-principal" },
+  {"id": 100, "amount": 100.00, "owner": "system-principal" },
+  {"id": 101, "amount": 150.00 ,  "owner": "system-principal-02" }
 ]

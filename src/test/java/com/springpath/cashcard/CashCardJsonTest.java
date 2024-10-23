@@ -28,9 +28,9 @@ public class CashCardJsonTest {
     @BeforeEach
     void setUp() {
         cashCards = Arrays.array(
-                new CashCard(99L, 123.45, "T1"),
-                new CashCard(100L, 100.00,"T2"),
-                new CashCard(101L, 150.00, "T3"));
+                new CashCard(99L, 123.45, "system-principal"),
+                new CashCard(100L, 100.00,"system-principal"),
+                new CashCard(101L, 150.00, "system-principal-02"));
     }
 
     @Test
