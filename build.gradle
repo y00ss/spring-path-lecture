@@ -20,6 +20,9 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	// Add the following dependency
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	// Add the two dependencies below
 	implementation 'org.springframework.data:spring-data-jdbc'
@@ -32,7 +35,7 @@ tasks.named('test') {
 
 test {
 	testLogging {
-		events "passed", "skipped", "failed" //, "standardOut", "standardError"
+		events  "failed" //"passed", "skipped", //, "standardOut", "standardError"
 
 		showExceptions true
 		exceptionFormat "full"
@@ -40,5 +43,5 @@ test {
 		showStackTraces true
 
 		// Change from false to true
-		showStandardStreams = true}
+		showStandardStreams = false}
 }
