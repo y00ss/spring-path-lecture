@@ -124,4 +124,20 @@ class CashcardApplicationTests {
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 
 	}
+	@Test
+	@DirtiesContext
+	void shouldDeleteAnExistingCard() {
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("system-principal", "abc123")
+				.exchange("/cashcards/99", HttpMethod.DELETE, null, Void.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+		response = restTemplate
+				.withBasicAuth("system-principal", "abc123")
+				.exchange("/cashcards/99", HttpMethod.DELETE, null, Void.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
+	}
 }

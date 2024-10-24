@@ -1,5 +1,6 @@
 package com.springpath.cashcard;
 
+import org.apache.coyote.http11.filters.IdentityInputFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,8 +34,6 @@ public class CashCardController {
         return ResponseEntity.ok(cashCard);
     }
 
-
-
     @GetMapping()
     public ResponseEntity<List<CashCard>> findAll(Pageable pageable, Principal principal) {
         Page<CashCard> page = cashCardRepository.findByOwner(principal.getName(),
@@ -64,11 +63,19 @@ public class CashCardController {
         if (cashCard == null) {
             return ResponseEntity.notFound().build();
         }
-
         cashCard.setAmount(cashCardUpdate.getAmount());
         cashCardRepository.save(cashCard);
         return ResponseEntity.noContent().build();
+    }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id, Principal principal) {
+
+        if (cashCardRepository.existsByIdAndOwner(id, principal.getName())){
+            cashCardRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
     private CashCard findCashCardByIdAndOwner(Long id, Principal principal) {
