@@ -21,7 +21,7 @@ class SecurityConfig {
             authRequest.requestMatchers("/cashcards/**")
                     .hasAnyRole("CARD-OWNER", "SYSTEM")) // aggiunta ruolo CARD-OWNER
                 .httpBasic(Customizer.withDefaults())
-                .csrf(csrf -> csrf.disable());
+                .csrf(csrf -> csrf.disable()); //todo implementare
         return http.build();
     }
 
