@@ -24,7 +24,7 @@ class CashcardApplicationTests {
 
 	@Test
 	void shouldCreateANewCashCard() {
-		CashCard newCashCard = new CashCard(null, 250.00, "system-principal");
+		CashCard newCashCard = new CashCard(null, 250.00, null);
 		ResponseEntity<String> response = restTemplate.withBasicAuth("system-principal", "abc123")
 				.postForEntity("/cashcards", newCashCard, String																																									.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
@@ -70,5 +70,22 @@ class CashcardApplicationTests {
 		ResponseEntity<String> response = restTemplate.withBasicAuth("system-principal", "WRONG-PASSWORD")
 				.getForEntity("/cashcards/99", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	}
+
+	@Test
+	void shouldNoReturnCardWhenUserNotOwner() {
+		ResponseEntity<String> response = restTemplate.withBasicAuth("system-principal-02", "abc123")
+				.getForEntity("/cashcards/99", String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+
+	}
+
+	@Test
+	void shouldNotAllowToCashCardWhenUserNotOwner() {
+		ResponseEntity<String> response = restTemplate.withBasicAuth("system-principal", "abc123")
+				.getForEntity("/cashcards/101", String.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 }

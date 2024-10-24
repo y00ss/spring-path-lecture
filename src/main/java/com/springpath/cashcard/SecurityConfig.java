@@ -18,7 +18,8 @@ class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(authRequest ->
-            authRequest.requestMatchers("/cashcards/**").authenticated())
+            authRequest.requestMatchers("/cashcards/**")
+                    .hasAnyRole("CARD-OWNER", "SYSTEM")) // aggiunta ruolo CARD-OWNER
                 .httpBasic(Customizer.withDefaults())
                 .csrf(csrf -> csrf.disable());
         return http.build();
@@ -32,11 +33,16 @@ class SecurityConfig {
     @Bean
     UserDetailsService testOnlyUsers(PasswordEncoder passwordEncoder) {
         User.UserBuilder users = User.builder();
-        UserDetails sarah = users
+        UserDetails sysPrincipalUser = users
                 .username("system-principal")
                 .password(passwordEncoder.encode("abc123"))
-                .roles() // No roles for now
+                .roles("CARD-OWNER")
                 .build();
-        return new InMemoryUserDetailsManager(sarah);
+        UserDetails secSysPrincipalUser = users
+                .username("system-principal-02")
+                .password(passwordEncoder.encode("abc123"))
+                .roles("NON-OWNER") // No roles for now
+                .build();
+        return new InMemoryUserDetailsManager(sysPrincipalUser, secSysPrincipalUser);
     }
 }
