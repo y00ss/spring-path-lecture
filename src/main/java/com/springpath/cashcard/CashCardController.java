@@ -10,7 +10,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.security.Principal;
 import java.util.List;
-import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/cashcards")
@@ -25,9 +25,15 @@ public class CashCardController {
     @GetMapping("/{id}")
     public ResponseEntity<CashCard> findById(@PathVariable Long id, Principal  principal) {
 
-        Optional<CashCard> cashCardOptional = Optional.ofNullable(cashCardRepository.findByIdAndOwner(id, principal.getName()));
-        return cashCardOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        CashCard cashCard = findCashCardByIdAndOwner(id, principal);
+
+        if (cashCard == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(cashCard);
     }
+
+
 
     @GetMapping()
     public ResponseEntity<List<CashCard>> findAll(Pageable pageable, Principal principal) {
@@ -49,5 +55,23 @@ public class CashCardController {
                 .toUri();
         return ResponseEntity
                 .created(locationOfNewCashCard).body(savedCashCard);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody CashCard cashCardUpdate, Principal principal){
+        CashCard cashCard = findCashCardByIdAndOwner(id, principal);
+
+        if (cashCard == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        cashCard.setAmount(cashCardUpdate.getAmount());
+        cashCardRepository.save(cashCard);
+        return ResponseEntity.noContent().build();
+
+    }
+
+    private CashCard findCashCardByIdAndOwner(Long id, Principal principal) {
+        return cashCardRepository.findByIdAndOwner(id, principal.getName());
     }
 }

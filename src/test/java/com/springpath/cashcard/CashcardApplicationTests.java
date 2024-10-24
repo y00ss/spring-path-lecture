@@ -7,6 +7,8 @@ import org.junit.jupiter.api.TestTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
@@ -26,7 +28,7 @@ class CashcardApplicationTests {
 	void shouldCreateANewCashCard() {
 		CashCard newCashCard = new CashCard(null, 250.00, null);
 		ResponseEntity<String> response = restTemplate.withBasicAuth("system-principal", "abc123")
-				.postForEntity("/cashcards", newCashCard, String																																									.class);
+				.postForEntity("/cashcards", newCashCard, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
 		// Add assertions such as these
@@ -54,7 +56,7 @@ class CashcardApplicationTests {
 	}
 
 	@Test
-	void shouldReturnACashCardWhenDataIsSaved(){
+	void shouldReturnACashCardWhenDataIsSaved() {
 		ResponseEntity<String> response = restTemplate.withBasicAuth("system-principal", "abc123")
 				.getForEntity("/cashcards/99", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -65,7 +67,7 @@ class CashcardApplicationTests {
 	}
 
 	@Test
-	void  shouldNotReturnCashCardWhenUsingWrongPassword(){
+	void shouldNotReturnCashCardWhenUsingWrongPassword() {
 
 		ResponseEntity<String> response = restTemplate.withBasicAuth("system-principal", "WRONG-PASSWORD")
 				.getForEntity("/cashcards/99", String.class);
@@ -87,5 +89,39 @@ class CashcardApplicationTests {
 				.getForEntity("/cashcards/101", String.class);
 
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	void shouldUpdateAnExistingCard() {
+		CashCard cashCardUpdate = new CashCard(null, 250.00, null);
+		HttpEntity<CashCard> request = new HttpEntity<>(cashCardUpdate);
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("system-principal", "abc123")
+				.exchange("/cashcards/99", HttpMethod.PUT, request, Void.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
+
+		ResponseEntity<String> responseEntity = restTemplate.withBasicAuth("system-principal", "abc123")
+				.getForEntity("/cashcards/99", String.class);
+
+		assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(responseEntity.getBody());
+		Number number = documentContext.read("$.amount");
+
+		assertThat(number).isEqualTo(250.00);
+
+	}
+
+	@Test
+	void shouldNotUpdateANotExistingCard() {
+		CashCard cashCardUpdate = new CashCard(null, 250.00, null);
+		HttpEntity<CashCard> request = new HttpEntity<>(cashCardUpdate);
+		ResponseEntity<Void> response = restTemplate
+				.withBasicAuth("system-principal", "abc123")
+				.exchange("/cashcards/9999", HttpMethod.PUT, request, Void.class);
+
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+
 	}
 }
